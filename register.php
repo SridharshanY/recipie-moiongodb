@@ -53,33 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $phone = $_POST['phone'];
     $password = $_POST['password'];
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    // $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $status = 1;
 
-    try {
-        // Correct the DSN string format
-        $conn = new PDO('mysql:host=localhost;dbname=temp', 'root', '');
-    
-        // Set the PDO error mode to exception
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-        // Prepare the SQL statement without single quotes around the placeholders
-        $stmt = $conn->prepare("INSERT INTO user (name, email, phone, password, status) 
-                                VALUES (:name, :email, :phone, :password, :status)");
-    
-        // Bind parameters
-        $stmt->bindParam(":name", $name, PDO::PARAM_STR);
-        $stmt->bindParam(":email", $email, PDO::PARAM_STR);
-        $stmt->bindParam(":phone", $phone, PDO::PARAM_STR);
-        $stmt->bindParam(":password", $hashedPassword, PDO::PARAM_STR);
-        $stmt->bindParam(":status", $status, PDO::PARAM_STR);
-    
-        // Execute the statement
-        $stmt->execute();
-        echo"<script>alert('Registered Successfully')</script>";
-        
-    } catch (PDOException $e) {
-        // Print the error message if something goes wrong
-        echo "Error: " . $e->getMessage();
-    }    
 }

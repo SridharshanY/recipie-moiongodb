@@ -5,49 +5,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    try {
-        // Correct the DSN string format
-        $conn = new PDO('mysql:host=localhost;dbname=temp', 'root', '');
-
-        // Set the PDO error mode to exception
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        // Prepare the statement to fetch user by email
-        $stmt = $conn->prepare('SELECT * FROM user WHERE email=:email');
-
-        // Bind the email parameter
-        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-
-        // Execute the statement
-        $stmt->execute();
-
-        // Set fetch mode to associative array
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-
-        // Fetch the user details
-        $results = $stmt->fetch();
-
-        // Check if user exists and verify the password
-        if ($results && password_verify($password, $results['password'])) {
-            ?>
-            <script>
-                alert('Login Successful')
-            </script>
-            <?php
-            $_SESSION['active']=1;
-            header('Location:index.php');
-        } else {
-            ?>
-            <script>
-                alert('Login Failed')
-            </script>
-            <?php
-            header('Location:login.php');
-        }
-
-    } catch (PDOException $e) {
-        echo 'Error: ' . $e->getMessage();
-    }
 }
 ?>
 <!DOCTYPE html>

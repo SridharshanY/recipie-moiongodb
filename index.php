@@ -13,6 +13,7 @@ if (isset($_SESSION["active"]) && $_SESSION["active"]==1) {
 </head>
 <body>
     <div class="container mt-5">
+        <button type="button" class="btn btn-danger position-fixed" onclick="window.location.href='logout.php'"style="right: 20px; top:20px;">Log Out</button>
         <h1 class="text-center mb-4">Search for a Recipe</h1>
 
         <form action="index.php" method="GET" class="d-flex justify-content-center mb-4">
