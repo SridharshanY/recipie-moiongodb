@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (isset($_SESSION['message'])) {
+    echo "<div class='alert alert-info'>" . $_SESSION['message'] . "</div>";
+    unset($_SESSION['message']); // Clear the message after displaying
+}
 require 'vendor/autoload.php'; // Ensure you're using Composer's autoloader
 
 use MongoDB\Client;
@@ -58,8 +62,11 @@ $recipesArray = iterator_to_array($recipes);
                             <?php endif; ?>
                             <div class="card-body">
                                 <h5 class="card-title"><?php echo htmlspecialchars($recipe['name']); ?></h5>
-                                <a href="mongo_meal.php?id=<?php echo (string) $recipe['_id']; ?>" class="btn btn-primary">View
-                                    Details</a>
+                                <div class="btn-group">
+                                    <a href="mongo_meal.php?id=<?php echo (string) $recipe['_id']; ?>" class="btn btn-primary">View Details</a>
+                                    <a href="delete_recipe.php?id=<?php echo (string) $recipe['_id']; ?>" class="btn btn-danger">Delete</a>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>
