@@ -8,15 +8,15 @@ if (isset($_SESSION["active"]) && $_SESSION["active"] == 1) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>MealDB - Search Recipe</title>
+        <title>MealDB - Add Recipe</title>
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     </head>
 
     <body>
         <nav class="nav nav-tabs flex-row justify-content-end">
-            <a class="nav-link active" href="index.php">Home</a>
-            <a class="nav-link" href="add_recipie.php">Add Recipie</a>
+            <a class="nav-link" href="index.php">Home</a>
+            <a class="nav-link active" href="add_recipie.php">Add Recipie</a>
             <a class="nav-link" href="view_recipie.php">View Recipie</a>
             <a class="nav-link" href="edit_recipie.php">Edit Recipie</a>
             <a class="nav-link link-danger" href="logout.php">Log Out</a>
