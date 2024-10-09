@@ -16,15 +16,15 @@ if (isset($_SESSION["active"]) && $_SESSION["active"] == 1) {
     <body>
         <nav class="nav nav-tabs flex-row justify-content-end">
             <a class="nav-link" href="index.php">Home</a>
-            <a class="nav-link active" href="add_recipie.php">Add Recipie</a>
-            <a class="nav-link" href="view_recipie.php">View Recipie</a>
-            <a class="nav-link" href="edit_recipie.php">Edit Recipie</a>
+            <a class="nav-link active" href="add_recipe.php">Add recipe</a>
+            <a class="nav-link" href="view_recipe.php">View recipe</a>
+            <a class="nav-link" href="edit_recipe.php">Edit recipe</a>
             <a class="nav-link link-danger" href="logout.php">Log Out</a>
         </nav>
 
         <div class="container mt-5">
 
-            <h1 class="text-center mb-4">Search for a Recipe</h1>
+            <h1 class="text-center mb-4">Add Your Recipe</h1>
 
             <form action="index.php" method="GET" class="d-flex justify-content-center mb-4">
                 <input type="text" name="search" class="form-control me-2" style="width: 300px;"

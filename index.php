@@ -16,9 +16,9 @@ if (isset($_SESSION["active"]) && $_SESSION["active"] == 1) {
     <body>
         <nav class="nav nav-tabs flex-row justify-content-end">
             <a class="nav-link active" href="index.php">Home</a>
-            <a class="nav-link" href="add_recipie.php">Add Recipie</a>
-            <a class="nav-link" href="view_recipie.php">View Recipie</a>
-            <a class="nav-link" href="edit_recipie.php">Edit Recipie</a>
+            <a class="nav-link" href="add_recipe.php">Add recipe</a>
+            <a class="nav-link" href="view_recipe.php">View recipe</a>
+            <a class="nav-link" href="edit_recipe.php">Edit recipe</a>
             <a class="nav-link link-danger" href="logout.php">Log Out</a>
         </nav>
 
