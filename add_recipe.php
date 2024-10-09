@@ -18,60 +18,53 @@ if (isset($_SESSION["active"]) && $_SESSION["active"] == 1) {
             <a class="nav-link" href="index.php">Home</a>
             <a class="nav-link active" href="add_recipe.php">Add recipe</a>
             <a class="nav-link" href="view_recipe.php">View recipe</a>
-            <a class="nav-link" href="edit_recipe.php">Edit recipe</a>
             <a class="nav-link link-danger" href="logout.php">Log Out</a>
         </nav>
 
         <div class="container mt-5">
-
             <h1 class="text-center mb-4">Add Your Recipe</h1>
+            <form action="submit_recipe.php" method="post" enctype="multipart/form-data">
+                <div class="row mb-3">
+                    <div class="col input-group">
+                        <span class="input-group-text">Name</span>
+                        <input type="text" name="name" class="form-control" placeholder="Enter food name">
+                    </div>
+                    <div class="col">
+                        <span>Upload picture</span>
+                        <input type="file" name="thumb">
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Instructions</span>
+                    <textarea name="instructions" id="" class="form-control"></textarea>
+                </div>
+                <div id="inputContainer">
 
-            <form action="index.php" method="GET" class="d-flex justify-content-center mb-4">
-                <input type="text" name="search" class="form-control me-2" style="width: 300px;"
-                    placeholder="Enter meal name" required>
-                <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+                <button id="addInputBtn" type="button" class="btn btn-primary mt-3">Ingredient+</button>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-success">Submit Recipe</button>
+                </div>
             </form>
-
-            <?php
-            if (isset($_GET['search'])) {
-                $mealName = $_GET['search'];
-                $url = "https://www.themealdb.com/api/json/v1/1/search.php?s=" . urlencode($mealName);
-
-                $curl = curl_init($url);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-                if (!$response = curl_exec($curl)) {
-                    echo "<div class='alert alert-danger'>cURL Error: " . curl_error($curl) . "</div>";
-                } else {
-                    $data = json_decode($response, true);
-
-                    if (!empty($data['meals'])) {
-                        echo "<h2 class='text-center'>Results for '" . htmlspecialchars($mealName) . "'</h2>";
-                        echo "<div class='row'>";
-
-                        foreach ($data['meals'] as $meal) {
-                            echo "<div class='col-md-4 mb-4'>";
-                            echo "<div class='card'>";
-                            echo "<img src='" . $meal['strMealThumb'] . "' class='card-img-top' alt='Meal Image'>";
-                            echo "<div class='card-body'>";
-                            echo "<h5 class='card-title'>" . $meal['strMeal'] . "</h5>";
-                            echo "<a href='meal.php?id=" . $meal['idMeal'] . "' class='btn btn-primary'>View Details</a>";
-                            echo "</div></div></div>";
-                        }
-
-                        echo "</div>";
-                    } else {
-                        echo "<div class='alert alert-warning'>No meals found. Try another search.</div>";
-                    }
-                }
-                curl_close($curl);
-            }
-            ?>
         </div>
 
         <!-- Bootstrap JS and Popper.js -->
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+        <script>
+            // JavaScript to add new input field
+            document.getElementById('addInputBtn').addEventListener('click', function () {
+                // Create a new input element
+                var input = document.createElement('input');
+                input.type = 'text';
+                input.name = 'ingredient[]';
+                input.className = 'form-control mt-2';
+                input.placeholder = 'Add Ingredient';
+
+                // Add the input to the container
+                document.getElementById('inputContainer').appendChild(input);
+            });
+        </script>
     </body>
 
     </html>

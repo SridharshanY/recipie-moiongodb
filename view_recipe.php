@@ -1,81 +1,77 @@
 <?php
 session_start();
-if (isset($_SESSION["active"]) && $_SESSION["active"] == 1) {
-    ?>
-    <!DOCTYPE html>
-    <html lang="en">
+require 'vendor/autoload.php'; // Ensure you're using Composer's autoloader
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>MealDB - View Recipe</title>
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    </head>
+use MongoDB\Client;
+use MongoDB\BSON\ObjectId;
 
-    <body>
-        <nav class="nav nav-tabs flex-row justify-content-end">
-            <a class="nav-link" href="index.php">Home</a>
-            <a class="nav-link" href="add_recipe.php">Add recipe</a>
-            <a class="nav-link active" href="view_recipe.php">View recipe</a>
-            <a class="nav-link" href="edit_recipe.php">Edit recipe</a>
-            <a class="nav-link link-danger" href="logout.php">Log Out</a>
-        </nav>
-
-        <div class="container mt-5">
-
-            <h1 class="text-center mb-4">View Your Recipes</h1>
-
-            <form action="index.php" method="GET" class="d-flex justify-content-center mb-4">
-                <input type="text" name="search" class="form-control me-2" style="width: 300px;"
-                    placeholder="Enter meal name" required>
-                <button type="submit" class="btn btn-primary">Search</button>
-            </form>
-
-            <?php
-            if (isset($_GET['search'])) {
-                $mealName = $_GET['search'];
-                $url = "https://www.themealdb.com/api/json/v1/1/search.php?s=" . urlencode($mealName);
-
-                $curl = curl_init($url);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-                if (!$response = curl_exec($curl)) {
-                    echo "<div class='alert alert-danger'>cURL Error: " . curl_error($curl) . "</div>";
-                } else {
-                    $data = json_decode($response, true);
-
-                    if (!empty($data['meals'])) {
-                        echo "<h2 class='text-center'>Results for '" . htmlspecialchars($mealName) . "'</h2>";
-                        echo "<div class='row'>";
-
-                        foreach ($data['meals'] as $meal) {
-                            echo "<div class='col-md-4 mb-4'>";
-                            echo "<div class='card'>";
-                            echo "<img src='" . $meal['strMealThumb'] . "' class='card-img-top' alt='Meal Image'>";
-                            echo "<div class='card-body'>";
-                            echo "<h5 class='card-title'>" . $meal['strMeal'] . "</h5>";
-                            echo "<a href='meal.php?id=" . $meal['idMeal'] . "' class='btn btn-primary'>View Details</a>";
-                            echo "</div></div></div>";
-                        }
-
-                        echo "</div>";
-                    } else {
-                        echo "<div class='alert alert-warning'>No meals found. Try another search.</div>";
-                    }
-                }
-                curl_close($curl);
-            }
-            ?>
-        </div>
-
-        <!-- Bootstrap JS and Popper.js -->
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-    </body>
-
-    </html>
-    <?php
-} else {
-    header("Location:login.php");
+// Check if user is logged in
+if (!isset($_SESSION["active"]) || $_SESSION["active"] != 1) {
+    header("Location: login.php");
+    exit();
 }
+
+// Connect to MongoDB
+$client = new Client("mongodb+srv://webdeveloper005ats:webdeveloper005@cluster0.9cx2u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"); // Adjust the URI if needed
+$db = $client->Recipie; // Your database name
+$collection = $db->recipe; // Your recipes collection
+
+// Fetch recipes for the logged-in user
+$userId = $_SESSION["user_email"]; // Assuming you store user email in the session
+$recipes = $collection->find(['user_email' => $userId]); // Adjust the filter as per your schema
+
+// Convert the cursor to an array to check if it's empty
+$recipesArray = iterator_to_array($recipes);
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Recipes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="nav nav-tabs flex-row justify-content-end">
+        <a class="nav-link" href="index.php">Home</a>
+        <a class="nav-link" href="add_recipe.php">Add recipe</a>
+        <a class="nav-link active" href="view_recipe.php">View recipe</a>
+        <a class="nav-link link-danger" href="logout.php">Log Out</a>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Your Recipes</h1>
+
+        <?php if (empty($recipesArray)): ?>
+            <div class="alert alert-warning">No recipes found.</div>
+        <?php else: ?>
+            <div class="row">
+                <?php foreach ($recipesArray as $recipe): ?>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <?php if (!empty($recipe['image'])): ?>
+                                <img src="<?php echo htmlspecialchars($recipe['image']); ?>" class="card-img-top"
+                                    alt="<?php echo htmlspecialchars($recipe['name']); ?>">
+                            <?php endif; ?>
+                            <div class="card-body">
+                                <h5 class="card-title"><?php echo htmlspecialchars($recipe['name']); ?></h5>
+                                <a href="mongo_meal.php?id=<?php echo (string) $recipe['_id']; ?>" class="btn btn-primary">View
+                                    Details</a>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <a href="index.php" class="btn btn-secondary mt-3">Go Back</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>
