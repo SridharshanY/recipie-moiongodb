@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Successful login: Set session variables
                 $_SESSION['active'] = 1; // Store user ID in session
                 $_SESSION['user_name'] = $user['name']; // Store user's name in session
+                $_SESSION['user_email'] = $user['email']; // Store user's email id in session
 
                 // Redirect to the dashboard or homepage
                 header('Location: index.php');
