@@ -1,9 +1,41 @@
 <?php
 session_start();
+require 'vendor/autoload.php'; // Include Composer's autoloader for MongoDB
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
+    try {
+        // Connect to MongoDB
+        $client = new MongoDB\Client("mongodb+srv://webdeveloper005ats:webdeveloper005@cluster0.9cx2u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"); // Adjust the connection string as needed
+        $db = $client->Recipie;  // Replace 'mydatabase' with your actual database name
+        $collection = $db->users;   // Replace 'users' with your actual collection name
+
+        // Find the user with the matching email
+        $user = $collection->findOne(['email' => $email]);
+        if ($user) {
+            // Verify the password
+            if (password_verify($password, $user['password'])) {
+                // Successful login: Set session variables
+                $_SESSION['active'] = 1; // Store user ID in session
+                $_SESSION['user_name'] = $user['name']; // Store user's name in session
+
+                // Redirect to the dashboard or homepage
+                header('Location: index.php');
+                exit();
+            } else {
+                // Incorrect password
+                echo "<script>alert('Incorrect password. Please try again.');</script>";
+            }
+        } else {
+            // User not found
+            echo "<script>alert('No user found with this email. Please register first.');</script>";
+        }
+
+    } catch (Exception $e) {
+        // Handle connection or query errors
+        echo "<script>alert('Error connecting to MongoDB: " . $e->getMessage() . "');</script>";
+    }
 
 }
 ?>
