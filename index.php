@@ -9,68 +9,97 @@ if (isset($_SESSION["active"]) && $_SESSION["active"] == 1) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>MealDB - Search Recipe</title>
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
     </head>
 
-    <body>
-        <nav class="nav nav-tabs flex-row justify-content-end">
-            <a class="nav-link active" href="index.php">Home</a>
-            <a class="nav-link" href="add_recipe.php">Add recipe</a>
-            <a class="nav-link" href="view_recipe.php">View recipe</a>
-            <a class="nav-link link-danger" href="logout.php">Log Out</a>
+    <body class="bg-gray-100 min-h-screen flex flex-col bg-gradient-to-r from-blue-200 via-blue-300 to-blue-400">
+        <!-- Navigation -->
+        <nav class="bg-indigo-600 text-white p-4 shadow-lg">
+            <div class="container mx-auto flex justify-between items-center">
+                <a href="index.php" class="text-xl font-bold">MealDB</a>
+                <div class="flex space-x-4">
+                    <a href="index.php" class="hover:underline">Home</a>
+                    <a href="add_recipe.php" class="hover:underline">Add Recipe</a>
+                    <a href="view_recipe.php" class="hover:underline">View Recipe</a>
+                    <a href="logout.php" class="hover:underline text-red-300">Log Out</a>
+                </div>
+            </div>
         </nav>
 
-        <div class="container mt-5">
-
-            <h1 class="text-center mb-4">Search for a Recipe</h1>
-
-            <form action="index.php" method="GET" class="d-flex justify-content-center mb-4">
-                <input type="text" name="search" class="form-control me-2" style="width: 300px;"
-                    placeholder="Enter meal name" required>
-                <button type="submit" class="btn btn-primary">Search</button>
+        <!-- Search Form -->
+        <div class="container mx-auto mt-10 flex flex-col items-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Search for a Recipe</h1>
+            <form action="index.php" method="GET" class="flex space-x-4 w-full max-w-lg">
+                <input type="text" name="search" 
+                    class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring focus:ring-indigo-200"
+                    placeholder="Enter ingredients (e.g., chicken,tomato)" required>
+                <button type="submit" 
+                    class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition">
+                    Search
+                </button>
             </form>
+        </div>
 
+        <!-- Results Section -->
+        <div class="container mx-auto mt-10">
             <?php
             if (isset($_GET['search'])) {
-                $mealName = $_GET['search'];
-                $url = "https://www.themealdb.com/api/json/v1/1/search.php?s=" . urlencode($mealName);
+                $ingredients = $_GET['search'];
+                $ingredientArray = array_map('trim', explode(',', $ingredients));
+                $allRecipes = [];
+                $commonRecipes = null;
 
-                $curl = curl_init($url);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                foreach ($ingredientArray as $ingredient) {
+                    $url = "https://www.themealdb.com/api/json/v1/1/filter.php?i=" . urlencode($ingredient);
 
-                if (!$response = curl_exec($curl)) {
-                    echo "<div class='alert alert-danger'>cURL Error: " . curl_error($curl) . "</div>";
-                } else {
+                    $curl = curl_init($url);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+                    $response = curl_exec($curl);
+
+                    if (!$response) {
+                        echo "<div class='bg-red-100 text-red-700 p-4 rounded-lg mb-4'>cURL Error for ingredient '$ingredient': " . curl_error($curl) . "</div>";
+                        curl_close($curl);
+                        continue;
+                    }
+
                     $data = json_decode($response, true);
 
                     if (!empty($data['meals'])) {
-                        echo "<h2 class='text-center'>Results for '" . htmlspecialchars($mealName) . "'</h2>";
-                        echo "<div class='row'>";
-
-                        foreach ($data['meals'] as $meal) {
-                            echo "<div class='col-md-4 mb-4'>";
-                            echo "<div class='card'>";
-                            echo "<img src='" . $meal['strMealThumb'] . "' class='card-img-top' alt='Meal Image'>";
-                            echo "<div class='card-body'>";
-                            echo "<h5 class='card-title'>" . $meal['strMeal'] . "</h5>";
-                            echo "<a href='meal.php?id=" . $meal['idMeal'] . "' class='btn btn-primary'>View Details</a>";
-                            echo "</div></div></div>";
+                        $recipes = array_column($data['meals'], null, 'idMeal'); // Index by meal ID
+                        if ($commonRecipes === null) {
+                            $commonRecipes = $recipes; // First ingredient
+                        } else {
+                            $commonRecipes = array_intersect_key($commonRecipes, $recipes); // Find common recipes
                         }
-
-                        echo "</div>";
                     } else {
-                        echo "<div class='alert alert-warning'>No meals found. Try another search.</div>";
+                        echo "<div class='bg-yellow-100 text-yellow-700 p-4 rounded-lg mb-4'>No recipes found for ingredient '$ingredient'.</div>";
                     }
+
+                    curl_close($curl);
                 }
-                curl_close($curl);
+
+                if (!empty($commonRecipes)) {
+                    echo "<h2 class='text-center text-2xl font-bold mb-6'>Results for ingredients: '" . htmlspecialchars($ingredients) . "'</h2>";
+                    echo "<div class='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6'>";
+
+                    foreach ($commonRecipes as $meal) {
+                        echo "<div class='bg-white shadow-lg rounded-lg overflow-hidden'>";
+                        echo "<img src='" . $meal['strMealThumb'] . "' alt='Meal Image' class='w-full h-48 object-cover'>";
+                        echo "<div class='p-4'>";
+                        echo "<h5 class='text-lg font-bold mb-2'>" . $meal['strMeal'] . "</h5>";
+                        echo "<a href='meal.php?id=" . $meal['idMeal'] . "' class='inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition'>View Details</a>";
+                        echo "</div></div>";
+                    }
+
+                    echo "</div>";
+                } else {
+                    echo "<div class='bg-yellow-100 text-yellow-700 p-4 rounded-lg text-center'>No recipes found matching all the given ingredients.</div>";
+                }
             }
             ?>
         </div>
-
-        <!-- Bootstrap JS and Popper.js -->
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     </body>
 
     </html>
@@ -78,3 +107,4 @@ if (isset($_SESSION["active"]) && $_SESSION["active"] == 1) {
 } else {
     header("Location:login.php");
 }
+?>

@@ -35,38 +35,52 @@ $recipesArray = iterator_to_array($recipes);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Recipes</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
-    <nav class="nav nav-tabs flex-row justify-content-end">
-        <a class="nav-link" href="index.php">Home</a>
-        <a class="nav-link" href="add_recipe.php">Add recipe</a>
-        <a class="nav-link active" href="view_recipe.php">View recipe</a>
-        <a class="nav-link link-danger" href="logout.php">Log Out</a>
+<body class="bg-gradient-to-r from-blue-200 via-blue-300 to-blue-400 min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-indigo-600 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.php" class="text-xl font-bold">MealDB</a>
+            <div class="flex space-x-4">
+                <a href="index.php" class="hover:underline">Home</a>
+                <a href="add_recipe.php" class="hover:underline">Add Recipe</a>
+                <a href="view_recipe.php" class="underline font-semibold">View Recipe</a>
+                <a href="logout.php" class="hover:underline text-red-300">Log Out</a>
+            </div>
+        </div>
     </nav>
 
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">Your Recipes</h1>
+    <!-- Recipes Section -->
+    <div class="container mx-auto mt-10">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Your Recipes</h1>
 
         <?php if (empty($recipesArray)): ?>
-            <div class="alert alert-warning">No recipes found.</div>
+            <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg text-center">
+                No recipes found.
+            </div>
         <?php else: ?>
-            <div class="row">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 <?php foreach ($recipesArray as $recipe): ?>
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <?php if (!empty($recipe['image'])): ?>
-                                <img src="<?php echo htmlspecialchars($recipe['image']); ?>" class="card-img-top"
-                                    alt="<?php echo htmlspecialchars($recipe['name']); ?>">
-                            <?php endif; ?>
-                            <div class="card-body">
-                                <h5 class="card-title"><?php echo htmlspecialchars($recipe['name']); ?></h5>
-                                <div class="btn-group">
-                                    <a href="mongo_meal.php?id=<?php echo (string) $recipe['_id']; ?>" class="btn btn-primary">View Details</a>
-                                    <a href="delete_recipe.php?id=<?php echo (string) $recipe['_id']; ?>" class="btn btn-danger">Delete</a>
-                                </div>
-                                
+                    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                        <?php if (!empty($recipe['image'])): ?>
+                            <img src="<?php echo htmlspecialchars($recipe['image']); ?>" 
+                                class="w-full h-48 object-cover"
+                                alt="<?php echo htmlspecialchars($recipe['name']); ?>">
+                        <?php endif; ?>
+                        <div class="p-4">
+                            <h5 class="text-lg font-bold mb-2"><?php echo htmlspecialchars($recipe['name']); ?></h5>
+                            <div class="flex space-x-2">
+                                <a href="mongo_meal.php?id=<?php echo (string) $recipe['_id']; ?>" 
+                                    class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                                    View Details
+                                </a>
+                                <a href="delete_recipe.php?id=<?php echo (string) $recipe['_id']; ?>" 
+                                    class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">
+                                    Delete
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -74,11 +88,12 @@ $recipesArray = iterator_to_array($recipes);
             </div>
         <?php endif; ?>
 
-        <a href="index.php" class="btn btn-secondary mt-3">Go Back</a>
+        <div class="text-center mt-6">
+            <a href="index.php" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
+                Go Back
+            </a>
+        </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>

@@ -25,19 +25,26 @@ $collection = $db->recipe; // Your recipes collection
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meal Details</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
-    <nav class="nav nav-tabs flex-row justify-content-end">
-        <a class="nav-link" href="index.php">Home</a>
-        <a class="nav-link" href="add_recipe.php">Add recipe</a>
-        <a class="nav-link active" href="view_recipe.php">View recipe</a>
-        <a class="nav-link link-danger" href="logout.php">Log Out</a>
+<body class="bg-gradient-to-r from-blue-200 via-blue-300 to-blue-400">
+
+    <nav class="bg-blue-600 p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div>
+                <a href="index.php" class="text-white text-lg font-semibold">Home</a>
+            </div>
+            <div class="space-x-4">
+                <a href="add_recipe.php" class="text-white">Add Recipe</a>
+                <a href="view_recipe.php" class="text-white">View Recipe</a>
+                <a href="logout.php" class="text-red-500">Log Out</a>
+            </div>
+        </div>
     </nav>
 
-    <div class="container mt-5">
+    <div class="container mx-auto my-10 p-5 bg-white rounded-lg shadow-lg">
         <?php
         if (isset($_GET['id'])) {
             $mealID = $_GET['id'];
@@ -50,37 +57,37 @@ $collection = $db->recipe; // Your recipes collection
                 $recipe = $collection->findOne(['_id' => new ObjectId($mealID)]);
 
                 if ($recipe) {
-                    echo "<div class='row'>";
-                    echo "<div class='col-md-6'>";
-                    echo "<h1>" . htmlspecialchars($recipe['name']) . "</h1>";
+                    echo "<div class='grid grid-cols-1 md:grid-cols-2 gap-8'>";
+                    echo "<div>";
+                    echo "<h1 class='text-3xl font-bold text-gray-800'>" . htmlspecialchars($recipe['name']) . "</h1>";
                     if (!empty($recipe['image'])) {
-                        echo "<img src='" . htmlspecialchars($recipe['image']) . "' class='img-fluid mb-4' alt='" . htmlspecialchars($recipe['name']) . "'>";
+                        echo "<img src='" . htmlspecialchars($recipe['image']) . "' class='mt-4 max-w-full rounded-lg shadow-md' alt='" . htmlspecialchars($recipe['name']) . "'>";
                     }
                     echo "</div>";
 
-                    echo "<div class='col-md-6'>";
-                    echo "<h2>Instructions</h2>";
-                    echo "<p>" . nl2br(htmlspecialchars($recipe['instructions'])) . "</p>";
-                    echo "<h2>Ingredients</h2>";
-                    echo "<ul class='list-group'>";
+                    echo "<div>";
+                    echo "<h2 class='text-2xl font-semibold text-gray-700 mt-4'>Instructions</h2>";
+                    echo "<p class='mt-2 text-gray-600'>" . nl2br(htmlspecialchars($recipe['instructions'])) . "</p>";
+                    echo "<h2 class='text-2xl font-semibold text-gray-700 mt-6'>Ingredients</h2>";
+                    echo "<ul class='mt-2 list-disc list-inside space-y-2'>";
                     foreach ($recipe['ingredients'] as $ingredient) {
-                        echo "<li class='list-group-item'>" . htmlspecialchars($ingredient) . "</li>";
+                        echo "<li class='text-gray-600'>" . htmlspecialchars($ingredient) . "</li>";
                     }
                     echo "</ul>";
-                    echo "</div></div>";
+                    echo "</div>";
+                    echo "</div>";
                 } else {
-                    echo "<div class='alert alert-warning'>No meal found.</div>";
+                    echo "<div class='text-center text-red-500'>No meal found.</div>";
                 }
             }
         }
         ?>
-        <a href="view_recipe.php" class="btn btn-secondary mt-3">Go Back</a>
-        <a href="edit_recipe.php?id=<?php echo (string) $recipe['_id']; ?>" class="btn btn-primary mt-3">Edit</a>
+        <div class="flex justify-between mt-6">
+            <a href="view_recipe.php" class="text-blue-500 hover:underline">Go Back</a>
+            <a href="edit_recipe.php?id=<?php echo (string) $recipe['_id']; ?>" class="text-blue-500 hover:underline">Edit</a>
+        </div>
     </div>
 
-    <!-- Bootstrap JS and Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>

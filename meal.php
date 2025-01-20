@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meal Details</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="container mt-5">
+
+<body class="bg-gradient-to-r from-blue-200 via-blue-300 to-blue-400 min-h-screen">
+    <div class="container mx-auto p-6">
         <?php
         if (isset($_GET['id'])) {
             $mealID = $_GET['id'];
@@ -18,41 +20,49 @@
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
             if (!$response = curl_exec($curl)) {
-                echo "<div class='alert alert-danger'>cURL Error: " . curl_error($curl) . "</div>";
+                echo "<div class='bg-red-100 text-red-700 p-4 rounded-lg'>cURL Error: " . curl_error($curl) . "</div>";
             } else {
                 $data = json_decode($response, true);
                 if (!empty($data['meals'])) {
                     $meal = $data['meals'][0];
-                    echo "<div class='row'>";
-                    echo "<div class='col-md-6'>";
-                    echo "<h1>" . $meal['strMeal'] . "</h1>";
-                    echo "<img src='" . $meal['strMealThumb'] . "' class='img-fluid mb-4' alt='" . $meal['strMeal'] . "'>";
+                    echo "<div class='grid grid-cols-1 md:grid-cols-2 gap-8 bg-white shadow-lg rounded-lg p-6'>";
+                    
+                    // Meal Image and Title
+                    echo "<div>";
+                    echo "<h1 class='text-3xl font-bold mb-4'>" . $meal['strMeal'] . "</h1>";
+                    echo "<img src='" . $meal['strMealThumb'] . "' class='rounded-lg w-full object-cover mb-4' alt='" . $meal['strMeal'] . "'>";
                     echo "</div>";
 
-                    echo "<div class='col-md-6'>";
-                    echo "<h2>Instructions</h2>";
-                    echo "<p>" . nl2br($meal['strInstructions']) . "</p>";
-                    echo "<h2>Ingredients</h2>";
-                    echo "<ul class='list-group'>";
+                    // Instructions and Ingredients
+                    echo "<div>";
+                    echo "<h2 class='text-2xl font-semibold mb-3'>Instructions</h2>";
+                    echo "<p class='text-gray-700 leading-relaxed mb-6'>" . nl2br($meal['strInstructions']) . "</p>";
+                    
+                    echo "<h2 class='text-2xl font-semibold mb-3'>Ingredients</h2>";
+                    echo "<ul class='list-disc pl-6'>";
                     for ($i = 1; $i <= 20; $i++) {
                         if (!empty($meal["strIngredient$i"])) {
-                            echo "<li class='list-group-item'>" . $meal["strIngredient$i"] . " - " . $meal["strMeasure$i"] . "</li>";
+                            echo "<li class='text-gray-800'>" . $meal["strIngredient$i"] . " - " . $meal["strMeasure$i"] . "</li>";
                         }
                     }
                     echo "</ul>";
-                    echo "</div></div>";
+                    echo "</div>";
+
+                    echo "</div>";
                 } else {
-                    echo "<div class='alert alert-warning'>No meal found.</div>";
+                    echo "<div class='bg-yellow-100 text-yellow-800 p-4 rounded-lg'>No meal found.</div>";
                 }
             }
             curl_close($curl);
         }
         ?>
-        <a href="index.php" class="btn btn-secondary mt-3">Go Back</a>
+        <!-- Back Button -->
+        <div class="text-center mt-6">
+            <a href="index.php" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
+                Go Back
+            </a>
+        </div>
     </div>
-
-    <!-- Bootstrap JS and Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
+
 </html>

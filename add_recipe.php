@@ -9,48 +9,69 @@ if (isset($_SESSION["active"]) && $_SESSION["active"] == 1) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>MealDB - Add Recipe</title>
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
     </head>
 
-    <body>
-        <nav class="nav nav-tabs flex-row justify-content-end">
-            <a class="nav-link" href="index.php">Home</a>
-            <a class="nav-link active" href="add_recipe.php">Add recipe</a>
-            <a class="nav-link" href="view_recipe.php">View recipe</a>
-            <a class="nav-link link-danger" href="logout.php">Log Out</a>
-        </nav>
+    <body class="bg-gray-100 min-h-screen bg-gradient-to-r from-blue-200 via-blue-300 to-blue-400">
+    <nav class="bg-indigo-600 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.php" class="text-xl font-bold">MealDB</a>
+            <div class="flex space-x-4">
+                <a href="index.php" class="hover:underline">Home</a>
+                <a href="add_recipe.php" class="underline font-semibold">Add Recipe</a>
+                <a href="view_recipe.php" class="hover:underline">View Recipe</a>
+                <a href="logout.php" class="hover:underline text-red-300">Log Out</a>
+            </div>
+        </div>
+    </nav>
 
-        <div class="container mt-5">
-            <h1 class="text-center mb-4">Add Your Recipe</h1>
-            <form action="submit_recipe.php" method="post" enctype="multipart/form-data">
-                <div class="row mb-3">
-                    <div class="col input-group">
-                        <span class="input-group-text">Name</span>
-                        <input type="text" name="name" class="form-control" placeholder="Enter food name">
+        <div class="container mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
+            <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Add Your Recipe</h1>
+            <form action="submit_recipe.php" method="post" enctype="multipart/form-data" class="space-y-6">
+                <!-- Recipe Name and Image -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-gray-700 font-semibold mb-2">Recipe Name</label>
+                        <input type="text" id="name" name="name" class="w-full border border-gray-300 rounded-md p-2"
+                            placeholder="Enter food name" required>
                     </div>
-                    <div class="col">
-                        <span>Upload picture</span>
-                        <input type="file" name="thumb">
+                    <div>
+                        <label for="thumb" class="block text-gray-700 font-semibold mb-2">Upload Picture</label>
+                        <input type="file" id="thumb" name="thumb" class="w-full border border-gray-300 rounded-md p-2">
                     </div>
                 </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text">Instructions</span>
-                    <textarea name="instructions" id="" class="form-control"></textarea>
+
+                <!-- Instructions -->
+                <div>
+                    <label for="instructions" class="block text-gray-700 font-semibold mb-2">Instructions</label>
+                    <textarea id="instructions" name="instructions" rows="6"
+                        class="w-full border border-gray-300 rounded-md p-2" placeholder="Write step-by-step instructions..."
+                        required></textarea>
                 </div>
+
+                <!-- Ingredients -->
                 <div id="inputContainer">
-
+                    <label class="block text-gray-700 font-semibold mb-2">Ingredients</label>
+                    <input type="text" name="ingredient[]" class="w-full border border-gray-300 rounded-md p-2 mb-3"
+                        placeholder="Add Ingredient" required>
                 </div>
-                <button id="addInputBtn" type="button" class="btn btn-primary mt-3">Ingredient+</button>
-                <div class="mt-3">
-                    <button type="submit" class="btn btn-success">Submit Recipe</button>
+
+                <button id="addInputBtn" type="button"
+                    class="bg-indigo-600 text-white px-4 py-2 rounded-md shadow-md hover:bg-indigo-700">
+                    Add Another Ingredient
+                </button>
+
+                <!-- Submit Button -->
+                <div class="text-center">
+                    <button type="submit"
+                        class="bg-green-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-green-700">
+                        Submit Recipe
+                    </button>
                 </div>
             </form>
         </div>
 
-        <!-- Bootstrap JS and Popper.js -->
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
         <script>
             // JavaScript to add new input field
             document.getElementById('addInputBtn').addEventListener('click', function () {
@@ -58,9 +79,9 @@ if (isset($_SESSION["active"]) && $_SESSION["active"] == 1) {
                 var input = document.createElement('input');
                 input.type = 'text';
                 input.name = 'ingredient[]';
-                input.className = 'form-control mt-2';
+                input.className = 'w-full border border-gray-300 rounded-md p-2 mb-3';
                 input.placeholder = 'Add Ingredient';
-
+                
                 // Add the input to the container
                 document.getElementById('inputContainer').appendChild(input);
             });
